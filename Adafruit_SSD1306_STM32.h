@@ -11,7 +11,7 @@ extern C {
 
 #include "stdlib.h"
 #include "string.h"
-#include "fonts.h"
+#include "Fonts.h"
 #include "math.h"
 
 
