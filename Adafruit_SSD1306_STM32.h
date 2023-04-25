@@ -89,6 +89,47 @@ void SSD1306_commandList(const uint8_t *c, uint8_t n);
     @note
 */
 void SSD1306_command1(uint8_t c);
+/*
+This method will draw a vertical bar graph for single input
+it has a rather large arguement list and is as follows
+curval = date to graph (must be between loval and hival)
+x = position of bar graph (lower left of bar)
+y = position of bar (lower left of bar
+w = width of bar graph
+h =  height of bar graph (does not need to be the same as the max scale)
+loval = lower value of the scale (can be negative)
+hival = upper value of the scale
+inc = scale division between loval and hival
+label = bottom lable text for the graph
+redraw = flag to redraw display. only on first pass (to reduce flickering)
+*/
+
+void SSD1306_drawVerticalBarChart(float curval, float x , float y , float w, float h , float loval , float hival , float inc);
+
+static char * _float_to_char(float x, char *p) {
+    char *s = p + 5; // go to end of buffer
+    uint16_t decimals;  // variable to store the decimals
+    int units;  // variable to store the units (part to left of decimal place)
+    if (x < 0) { // take care of negative numbers
+        decimals = (int)(x * -10) % 10; // make 1000 for 3 decimals etc.
+        units = (int)(-1 * x);
+    } else { // positive numbers
+        decimals = (int)(x * 10) % 10;
+        units = (int)x;
+    }
+
+//    *--s = (decimals % 10) + '0';
+//    decimals /= 10; // repeat for as many decimal places as you need
+//    *--s = (decimals % 10) + '0';
+//    *--s = '.';
+
+    while (units > 0) {
+        *--s = (units % 10) + '0';
+        units /= 10;
+    }
+    if (x < 0) *--s = '-'; // unary minus sign for negative numbers
+    return s;
+}
 
 /*!
     @brief  Allocate RAM for image buffer, initialize peripherals and pins.
