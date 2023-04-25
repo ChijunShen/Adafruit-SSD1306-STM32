@@ -7,6 +7,7 @@ int8_t vccstate; // VCC selection, set by begin method.
 uint8_t contrast = 255; ///< normal contrast setting for this device
 
 char labeltext[5];
+char *ptr_val;
 #ifndef min
 #define min(a, b) (((a) < (b)) ? (a) : (b))
 #endif
@@ -802,20 +803,6 @@ void SSD1306_drawCircleDegree(int16_t x, int16_t y, int16_t radius, int16_t degr
     }
 }
 
-/*
-This method will draw a vertical bar graph for single input
-it has a rather large arguement list and is as follows
-curval = date to graph (must be between loval and hival)
-x = position of bar graph (lower left of bar)
-y = position of bar (lower left of bar
-w = width of bar graph
-h =  height of bar graph (does not need to be the same as the max scale)
-loval = lower value of the scale (can be negative)
-hival = upper value of the scale
-inc = scale division between loval and hival
-redraw = flag to redraw display. only on first pass (to reduce flickering)
-*/
-
 void SSD1306_drawVerticalBarChart(float curval, float x , float y ,float w, float h , float loval , float hival , float inc)
 {
 	float stepval, my,  i, level, data,tmp;
@@ -846,6 +833,84 @@ void SSD1306_drawVerticalBarChart(float curval, float x , float y ,float w, floa
 	// up until now print sends data to a video buffer NOT the screen
 	// this call sends the data to the screen
 	//SSD1306_display();
+}
+void SSD1306_drawVerticalBar(float curval, float x , float y ,float w, float h , float loval , float hival , float inc)
+{
+	float stepval, my,  i, level, data,tmp;
+	// step val basically scales the hival and low val to the height
+	// deducting a small value to eliminate round off errors
+	// this val may need to be adjusted
+	// compute level of bar graph that is scaled to the  height and the hi and low vals
+	  // this is needed to accompdate for +/- range
+	level = (h * (((curval - loval) / (hival - loval))));
+	// draw the bar graph
+	// write a upper and lower bar to minimize flicker cause by blanking out bar and redraw on update
+	SSD1306_drawRect(x, y - h, w, h, SSD1306_WHITE);
+	SSD1306_fillRect(x, y - h, w, h - level,  SSD1306_BLACK);
+	SSD1306_drawRect(x, y - h, w, h, SSD1306_WHITE);
+	SSD1306_fillRect(x, y - level, w,  level, SSD1306_WHITE);
+	// up until now print sends data to a video buffer NOT the screen
+	// this call sends the data to the screen
+	//SSD1306_display();
+}
+
+void SSD1306_drawHorizontalBarChart(float curval, float x , float y , float w, float h , float loval , float hival , float inc)
+{
+	float stepval, mx, level, i, data, tmp;
+
+
+    // step val basically scales the hival and low val to the width
+	if(curval > 99999 || hival > 99999) return; // labeltext[5] can hold maximal 99999
+    stepval =  inc * (w / (hival - loval)) - .00001;
+    // draw the text
+    for (i = 0; i <= w; i += stepval) {
+    	SSD1306_drawFastVLine(i + x , y ,  5, SSD1306_WHITE);
+      // draw lables
+      // addling a small value to eliminate round off errors
+      // this val may need to be adjusted
+		tmp = inc / stepval;
+        data =  ( i * tmp) + loval + 0.00001;
+		memset(labeltext,' ',sizeof(labeltext));
+		_float_to_char(data, labeltext);
+		ptr_val = &labeltext[1];
+	    while(*ptr_val == ' '){
+	    	ptr_val++;
+	    }
+        SSD1306_print(i + x, y + 10, ptr_val , &Font_7x10,SSD1306_WHITE);
+    }
+
+  // compute level of bar graph that is scaled to the width and the hi and low vals
+  // this is needed to accompdate for +/- range capability
+  // draw the bar graph
+  // write a upper and lower bar to minimize flicker cause by blanking out bar and redraw on update
+	level = (w * (((curval - loval) / (hival - loval))));
+	SSD1306_fillRect(x + level, y - h, w - level, h,  SSD1306_BLACK);
+	SSD1306_drawRect(x, y - h, w,  h, SSD1306_WHITE);
+	SSD1306_fillRect(x, y - h, level,  h, SSD1306_WHITE);
+	// up until now print sends data to a video buffer NOT the screen
+	// this call sends the data to the screen
+	//d.display();
+
+}
+
+void SSD1306_drawHorizontalBar(float curval, float x , float y , float w, float h , float loval , float hival , float inc)
+{
+	float stepval, mx, level, i, data, tmp;
+
+
+    // step val basically scales the hival and low val to the width
+  // compute level of bar graph that is scaled to the width and the hi and low vals
+  // this is needed to accompdate for +/- range capability
+  // draw the bar graph
+  // write a upper and lower bar to minimize flicker cause by blanking out bar and redraw on update
+	level = (w * (((curval - loval) / (hival - loval))));
+	SSD1306_fillRect(x + level, y - h, w - level, h,  SSD1306_BLACK);
+	SSD1306_drawRect(x, y - h, w,  h, SSD1306_WHITE);
+	SSD1306_fillRect(x, y - h, level,  h, SSD1306_WHITE);
+	// up until now print sends data to a video buffer NOT the screen
+	// this call sends the data to the screen
+	//d.display();
+
 }
 
 

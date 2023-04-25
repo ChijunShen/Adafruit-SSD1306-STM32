@@ -100,16 +100,40 @@ h =  height of bar graph (does not need to be the same as the max scale)
 loval = lower value of the scale (can be negative)
 hival = upper value of the scale
 inc = scale division between loval and hival
-label = bottom lable text for the graph
 redraw = flag to redraw display. only on first pass (to reduce flickering)
 */
 
 void SSD1306_drawVerticalBarChart(float curval, float x , float y , float w, float h , float loval , float hival , float inc);
+void SSD1306_drawVerticalBar(float curval, float x , float y , float w, float h , float loval , float hival , float inc);
+
+/*
+  This method will draw a horizontal bar graph for single input
+  it has a rather large arguement list and is as follows
+  x = position of bar graph (upper left of bar)
+  curval = date to graph (must be between loval and hival)
+  y = position of bar (upper left of bar (add some vale to leave room for label)
+  w = width of bar graph (does not need to be the same as the max scale)
+  h =  height of bar graph
+  loval = lower value of the scale (can be negative)
+  hival = upper value of the scale
+  inc = scale division between loval and hival
+  dig = format control to set number of digits to display. (not includeing the decimal)
+  redraw = flag to redraw display. only on first pass (to reduce flickering)
+*/
+
+void SSD1306_drawHorizontalBarChart(float curval, float x , float y , float w, float h , float loval , float hival , float inc);
+void SSD1306_drawHorizontalBar(float curval, float x , float y , float w, float h , float loval , float hival , float inc);
+
 
 static char * _float_to_char(float x, char *p) {
     char *s = p + 5; // go to end of buffer
     uint16_t decimals;  // variable to store the decimals
     int units;  // variable to store the units (part to left of decimal place)
+    if ((int)x == 0){
+    	*--s='0';
+    	return s;
+
+    }
     if (x < 0) { // take care of negative numbers
         decimals = (int)(x * -10) % 10; // make 1000 for 3 decimals etc.
         units = (int)(-1 * x);
