@@ -124,6 +124,26 @@ void SSD1306_drawVerticalBar(float curval, float x , float y , float w, float h 
 void SSD1306_drawHorizontalBarChart(float curval, float x , float y , float w, float h , float loval , float hival , float inc);
 void SSD1306_drawHorizontalBar(float curval, float x , float y , float w, float h , float loval , float hival , float inc);
 
+/*
+  function to draw a cartesian coordinate system and plot whatever data you want
+  just pass x and y and the graph will be drawn huge arguement list
+  &display to pass the display object, mainly used if multiple displays are connected to the MCU
+  gx = x graph location (lower left)
+  gy = y graph location (lower left)
+  w = width of graph
+  h = height of graph
+  xlo = lower bound of x axis
+  xhi = upper bound of x asis
+  xinc = division of x axis (distance not count)
+  ylo = lower bound of y axis
+  yhi = upper bound of y asis
+  yinc = division of y axis (distance not count)
+  &drawAchse = flag to redraw graph on fist call only
+*/
+
+
+void SSD1306_drawCGraph(float x, float y, float gx, float gy, float w, float h, float xlo, float xhi, float xinc, float ylo, float yhi, double yinc, uint8_t drawAchse);
+
 
 static char * _float_to_char(float x, char *p) {
     char *s = p + 5; // go to end of buffer

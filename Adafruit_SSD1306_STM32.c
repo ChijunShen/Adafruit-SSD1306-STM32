@@ -8,6 +8,7 @@ uint8_t contrast = 255; ///< normal contrast setting for this device
 
 char labeltext[5];
 char *ptr_val;
+float ox,oy;
 #ifndef min
 #define min(a, b) (((a) < (b)) ? (a) : (b))
 #endif
@@ -910,6 +911,71 @@ void SSD1306_drawHorizontalBar(float curval, float x , float y , float w, float 
 	// up until now print sends data to a video buffer NOT the screen
 	// this call sends the data to the screen
 	//d.display();
+
+}
+
+void SSD1306_drawCGraph(float x, float y, float gx, float gy, float w, float h, float xlo, float xhi, float xinc, float ylo, float yhi, double yinc, uint8_t drawAchse) {
+
+  float i;
+  float temp;
+  int rot, newrot;
+
+  if (drawAchse == 1) {
+    ox = (x - xlo) * ( w) / (xhi - xlo) + gx;
+    oy = (y - ylo) * (gy - h - gy) / (yhi - ylo) + gy;
+    // draw y scale
+    for ( i = ylo; i <= yhi; i += yinc) {
+      // compute the transform
+      // note my transform funcition is the same as the map function, except the map uses long and we nfloatubles
+      temp =  (i - ylo) * (gy - h - gy) / (yhi - ylo) + gy;
+      if (i == 0) {
+    	  SSD1306_drawFastHLine(gx - 3, temp, w + 3, SSD1306_WHITE);
+      }
+      else {
+    	  SSD1306_drawFastHLine(gx - 3, temp, 3, SSD1306_WHITE);
+      }
+	  memset(labeltext,' ',sizeof(labeltext));
+	  _float_to_char(i, labeltext);
+	  ptr_val = &labeltext[1];
+	  while(*ptr_val == ' '){
+		ptr_val++;
+	 }
+
+     SSD1306_print(gx - 27, temp - 3,ptr_val,&Font_7x10,SSD1306_WHITE);
+    }
+    // draw x scale
+    for (i = xlo; i <= xhi; i += xinc) {
+      // compute the transform
+      temp =  (i - xlo) * ( w) / (xhi - xlo) + gx;
+      if (i == 0) {
+    	  SSD1306_drawFastVLine(temp, gy - h, h + 3, SSD1306_WHITE);
+      }
+      else {
+    	  SSD1306_drawFastVLine(temp, gy, 3, SSD1306_WHITE);
+      }
+	  memset(labeltext,' ',sizeof(labeltext));
+	  _float_to_char(i, labeltext);
+	  ptr_val = &labeltext[1];
+	  while(*ptr_val == ' '){
+		ptr_val++;
+	 }
+      SSD1306_print(temp, gy + 6,ptr_val,&Font_7x10,SSD1306_WHITE);
+    }
+  }
+
+  // graph drawn now plot the data
+  // the entire plotting code are these few lines...
+
+  x =  (x - xlo) * ( w) / (xhi - xlo) + gx;
+  y =  (y - ylo) * (gy - h - gy) / (yhi - ylo) + gy;
+  SSD1306_drawLine(ox, oy, x, y, SSD1306_WHITE);
+  SSD1306_drawLine(ox, oy - 1, x, y - 1, SSD1306_WHITE);
+  ox = x;
+  oy = y;
+
+  // up until now print sends data to a video buffer NOT the screen
+  // this call sends the data to the screen
+  //d.display();
 
 }
 
