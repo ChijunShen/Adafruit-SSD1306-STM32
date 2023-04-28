@@ -914,6 +914,16 @@ void SSD1306_drawHorizontalBar(float curval, float x , float y , float w, float 
 
 }
 
+void SSD1306_plotData(float *xData,float *yData,int size, float xlo, float xhi, uint8_t xNumofSplit, float ylo, float yhi, uint8_t yNumofSplit){
+   float x_inc = (xhi-xlo)/xNumofSplit;
+   float y_inc = (yhi-ylo)/yNumofSplit;
+   SSD1306_clearDisplay();
+   SSD1306_drawCGraph(xData[0], yData[0], 30, 40, 75, 30, xlo, xhi, x_inc, ylo, yhi, y_inc,1);
+   for(uint16_t i=1; i < size;i++){
+	   SSD1306_drawCGraph(xData[i], yData[i], 30, 40, 75, 30, xlo, xhi, x_inc, ylo, yhi, y_inc,0);
+   }
+}
+
 void SSD1306_drawCGraph(float x, float y, float gx, float gy, float w, float h, float xlo, float xhi, float xinc, float ylo, float yhi, double yinc, uint8_t drawAchse) {
 
   float i;

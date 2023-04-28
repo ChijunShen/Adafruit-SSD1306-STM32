@@ -145,6 +145,8 @@ void SSD1306_drawHorizontalBar(float curval, float x , float y , float w, float 
 void SSD1306_drawCGraph(float x, float y, float gx, float gy, float w, float h, float xlo, float xhi, float xinc, float ylo, float yhi, double yinc, uint8_t drawAchse);
 
 
+void SSD1306_plotData(float *xData,float *yData,int size, float xlo, float xhi, uint8_t xNumofSplit, float ylo, float yhi, uint8_t yNumofSplit);
+
 static char * _float_to_char(float x, char *p) {
     char *s = p + 5; // go to end of buffer
     uint16_t decimals;  // variable to store the decimals
@@ -162,10 +164,12 @@ static char * _float_to_char(float x, char *p) {
         units = (int)x;
     }
 
-//    *--s = (decimals % 10) + '0';
-//    decimals /= 10; // repeat for as many decimal places as you need
-//    *--s = (decimals % 10) + '0';
-//    *--s = '.';
+    if(decimals !=0){
+        *--s = (decimals % 10) + '0';
+//        decimals /= 10; // repeat for as many decimal places as you need
+//        *--s = (decimals % 10) + '0';
+        *--s = '.';
+    }
 
     while (units > 0) {
         *--s = (units % 10) + '0';
@@ -174,6 +178,7 @@ static char * _float_to_char(float x, char *p) {
     if (x < 0) *--s = '-'; // unary minus sign for negative numbers
     return s;
 }
+
 
 /*!
     @brief  Allocate RAM for image buffer, initialize peripherals and pins.
